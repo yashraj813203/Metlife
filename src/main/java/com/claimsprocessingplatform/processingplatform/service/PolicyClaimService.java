@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -90,6 +92,18 @@ public class PolicyClaimService {
                 policyClaim.getAmount(),
                 policyClaim.getDesc()
         ));
+    }
+    
+    public Map<String, Double> getClaimAmountSummary() {
+        List<Map<String, Object>> results = policyRespo.sumClaimAmountsByStatus();
+
+        Map<String, Double> summary = new HashMap<>();
+        for (Map<String, Object> result : results) {
+            String status = (String) result.get("_id");
+            Double total = ((Number) result.get("totalAmount")).doubleValue();
+            summary.put(status, total);
+        }
+        return summary;
     }
 
 }
