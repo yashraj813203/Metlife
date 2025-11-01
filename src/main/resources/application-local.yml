@@ -1,0 +1,21 @@
+# APP NAME
+spring:
+  application:
+    name: processingplatform-local
+#  DATABASE CONFIGURATION
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: processingplatform
+      repositories:
+        type: auto
+#  LOGGING CONFIGURATION
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO
+
+
+
