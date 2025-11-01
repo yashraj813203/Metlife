@@ -1,23 +1,19 @@
-package com.claimsprocessingplatform.processingplatform.model;
+package com.claimsprocessingplatform.processingplatform.dto;
 
 import com.claimsprocessingplatform.processingplatform.enums.ClaimType;
 import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.claimsprocessingplatform.processingplatform.model.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Document(collection = "policies")
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class PolicyClaim {
-
-    @Id
+@NoArgsConstructor
+@Data
+public class PolicyClaimResponceDto {
     private String id;
     private String policyId;
     private String policyHolderName;

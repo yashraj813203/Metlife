@@ -1,6 +1,7 @@
 package com.claimsprocessingplatform.processingplatform.service;
 
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
+import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponceDto;
 import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
 import com.claimsprocessingplatform.processingplatform.model.PolicyClaim;
 import com.claimsprocessingplatform.processingplatform.repository.PolicyRespo;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PolicyClaimService {
@@ -48,18 +50,46 @@ public class PolicyClaimService {
         policyClaim.setDateOfBirth(policyClaimDto.getDateOfBirth());
         policyClaim.setClaimType(policyClaimDto.getClaimType());
         policyClaim.setClimStatus(ClimStatus.PENDING);
-
+        policyClaim.setUserId(policyClaimDto.getUserId());
+        policyClaim.setAmount(policyClaimDto.getAmount());
+        policyClaim.setDesc(policyClaimDto.getDesc());
         policyRespo.save(policyClaim);
     }
-    
+    public List<PolicyClaimResponceDto> getAllClaims() {
+        if (policyRespo.findAll() == null || policyRespo.findAll().isEmpty()) {
+            throw new IllegalArgumentException("No policy found");
+        }
+        List<PolicyClaim> policyClaims = policyRespo.findAll();
+        return policyClaims.stream()
+                .map(policyClaim -> new PolicyClaimResponceDto(
+                        policyClaim.getId(),
+                        policyClaim.getPolicyId(),
+                        policyClaim.getPolicyHolderName(),
+                        policyClaim.getDateOfBirth(),
+                        policyClaim.getClaimType(),
+                        policyClaim.getClimStatus(),
+                        policyClaim.getUserId(),
+                        policyClaim.getAmount(),
+                        policyClaim.getDesc()
+                ))
+                .collect(Collectors.toList());
 
-    public List<PolicyClaim> getAllClaims() {
-        return policyRespo.findAll();
     }
 
   
-    public Optional<PolicyClaim> getClaimById(String id) {
-        return policyRespo.findById(id);
+    public Optional<PolicyClaimResponceDto> getClaimsByid(String ClaimId) {
+        Optional<PolicyClaim> policyClaimOptional = policyRespo.findById(ClaimId);
+        return policyClaimOptional.map(policyClaim -> new PolicyClaimResponceDto(
+                policyClaim.getId(),
+                policyClaim.getPolicyId(),
+                policyClaim.getPolicyHolderName(),
+                policyClaim.getDateOfBirth(),
+                policyClaim.getClaimType(),
+                policyClaim.getClimStatus(),
+                policyClaim.getUserId(),
+                policyClaim.getAmount(),
+                policyClaim.getDesc()
+        ));
     }
 
 }
