@@ -1,19 +1,24 @@
 package com.claimsprocessingplatform.processingplatform.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Data; 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.index.Indexed;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "users")
+@Data 
+@Document(collection = "users") 
 public class User {
+
     @Id
-    private String id;
-    private String username;
-    private String email;
+    private String id; 
+
+    @Field("name")
     private String fullName;
+
+    @Indexed(unique = true)
+    private String email;
+
+    private String phonenumber;
+
 }
