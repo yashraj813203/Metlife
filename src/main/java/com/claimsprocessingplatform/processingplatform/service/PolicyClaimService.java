@@ -56,7 +56,13 @@ public class PolicyClaimService {
         policyClaim.setAmount(policyClaimDto.getAmount());
         policyClaim.setDesc(policyClaimDto.getDesc());
         policyRespo.save(policyClaim);
+        RuleService ruleService = new RuleService();
+        ruleService.allRuleService(policyClaim);
+
     }
+
+
+
     public List<PolicyClaimResponceDto> getAllClaims() {
         if (policyRespo.findAll() == null || policyRespo.findAll().isEmpty()) {
             throw new IllegalArgumentException("No policy found");
