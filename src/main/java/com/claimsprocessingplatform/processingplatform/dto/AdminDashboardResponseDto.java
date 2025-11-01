@@ -22,6 +22,6 @@ private long claimsProcessing;
 private double totalAmountClaimPassed;
 private double totalAmountClaimFailed;
 private double totalAmountClaimProcessing;
-
+private double totalAmountClaimFraud;
 private List<Map<String, Object>> highAmountClaims;
 }

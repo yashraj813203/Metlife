@@ -32,7 +32,7 @@ public class AdminService {
         List<PolicyClaim> claims = policyClaimRepository.findAll();
 
         if (claims.isEmpty()) {
-            return new AdminDashboardResponseDto(0, 0, 0, 0, 0, 0, 0, Collections.emptyList());
+            return new AdminDashboardResponseDto(0, 0, 0, 0, 0, 0, 0,0, Collections.emptyList());
         }
 
         // count by status
@@ -58,6 +58,11 @@ public class AdminService {
                 .mapToDouble(c -> c.getAmount().doubleValue())
                 .sum();
 
+        double totalAmountClaimFraud = claims.stream()
+                .filter(c -> c.getClaimStatus() == ClaimStatus.FRAUD)
+                .mapToDouble(c -> c.getAmount().doubleValue())
+                .sum();
+  
         List<Map<String, Object>> highAmountClaims = claims.stream()
 
                 .sorted(Comparator.comparing(PolicyClaim::getAmount, Comparator.nullsLast(BigDecimal::compareTo)).reversed())
@@ -90,7 +95,8 @@ public class AdminService {
                 .totalAmountClaimPassed(totalAmountClaimPassed)
                 .totalAmountClaimFailed(totalAmountClaimFailed)
                 .totalAmountClaimProcessing(totalAmountClaimProcessing)
-                // .highAmountClaims(highAmountClaims)
+                .totalAmountClaimFraud(totalAmountClaimFraud)
+                .highAmountClaims(highAmountClaims)
                 .build();
     }
 }
