@@ -23,44 +23,36 @@ public class RuleService {
         BigDecimal amount = new BigDecimal(1000000);
         if (policyClaim.getClaimType().equals("CASH") && policyClaim.getAmount().compareTo(amount)>0) {
             policyClaim.setClaimStatus(ClaimStatus.REJECTED);
+            policyRespo.save(policyClaim);
         } else if(policyClaim.getClaimType().equals("CASHLESS") && policyClaim.getAmount().compareTo(amount)>500000){
             policyClaim.setClaimStatus(ClaimStatus.REJECTED);
+            policyRespo.save(policyClaim);
         }
         if (policyClaim.getAmount().compareTo(amount)>0) {
             policyClaim.setClaimStatus(ClaimStatus.REJECTED);
+            policyRespo.save(policyClaim);
         }else if(policyClaim.getAmount().compareTo(amount)>1000000){
             policyClaim.setClaimStatus(ClaimStatus.FRAUD);
+            policyRespo.save(policyClaim);
         } 
-        
-        
-    }
-    public String evaluateClaimEligibility(String policyId, String claimType, double amount) {
-        if (amount > 1000000) {
-            return "REJECTED";
-        }else if(amount * 2>1000000){
-            return "FRAUD";
-        } 
-        else if (claimType.equals("MEDICAL") && amount <= 10000) {
-            return "APPROVED";
-        } else {
-            return "PENDING";
+        long diffInDays = policyClaim.getDateOfBirth().getDayOfYear() - policyClaim.getDateOfBirth().getDayOfYear();
+        if(diffInDays>=90) {
+            policyClaim.setClaimStatus(ClaimStatus.FRAUD);
+            policyRespo.save(policyClaim);
         }
-    }
-    public String dateEvaluation(LocalDate claimDate) {
-        LocalDate currentDate = LocalDate.now();
-        long diffInDays = currentDate.getDayOfYear() - claimDate.getDayOfYear();
-        if (diffInDays <= 30) {
-            return "ELIGIBLE";
+        else if (diffInDays <= 30) {
+            policyClaim.setClaimStatus(ClaimStatus.REJECTED);
+            policyRespo.save(policyClaim);
         } else {
-            return "INELIGIBLE";
+            policyClaim.setClaimStatus(ClaimStatus.APPROVED);
+            policyRespo.save(policyClaim);
         }
-    }
-    public String claimIdRepeat(String claimId) {
-        Optional<PolicyClaim> existingClaim = policyRespo.findById(claimId);
-        if (existingClaim.get().getId().equals(existingClaim)) {
-            return "FRAUD";
-        } else {
-            return "UNIQUE";
+
+        Boolean existingClaim = policyRespo.existsById(policyClaim.getId());
+        if (existingClaim) {
+            policyClaim.setClaimStatus(ClaimStatus.FRAUD);
+            policyRespo.save(policyClaim);
         }
+
     }
 }
