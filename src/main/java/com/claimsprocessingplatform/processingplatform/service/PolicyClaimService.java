@@ -2,7 +2,7 @@ package com.claimsprocessingplatform.processingplatform.service;
 
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponceDto;
-import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
 import com.claimsprocessingplatform.processingplatform.model.PolicyClaim;
 import com.claimsprocessingplatform.processingplatform.repository.PolicyRespo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class PolicyClaimService {
         policyClaim.setPolicyHolderName(policyClaimDto.getPolicyHolderName());
         policyClaim.setDateOfBirth(policyClaimDto.getDateOfBirth());
         policyClaim.setClaimType(policyClaimDto.getClaimType());
-        policyClaim.setClimStatus(ClimStatus.PENDING);
+        policyClaim.setClaimStatus(ClaimStatus.PENDING);
         policyClaim.setUserId(policyClaimDto.getUserId());
         policyClaim.setAmount(policyClaimDto.getAmount());
         policyClaim.setDesc(policyClaimDto.getDesc());
@@ -67,7 +67,7 @@ public class PolicyClaimService {
                         policyClaim.getPolicyHolderName(),
                         policyClaim.getDateOfBirth(),
                         policyClaim.getClaimType(),
-                        policyClaim.getClimStatus(),
+                        policyClaim.getClaimStatus(),
                         policyClaim.getUserId(),
                         policyClaim.getAmount(),
                         policyClaim.getDesc()
@@ -85,7 +85,7 @@ public class PolicyClaimService {
                 policyClaim.getPolicyHolderName(),
                 policyClaim.getDateOfBirth(),
                 policyClaim.getClaimType(),
-                policyClaim.getClimStatus(),
+                policyClaim.getClaimStatus(),
                 policyClaim.getUserId(),
                 policyClaim.getAmount(),
                 policyClaim.getDesc()

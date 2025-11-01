@@ -2,8 +2,8 @@ package com.claimsprocessingplatform.processingplatform.service;
 
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponceDto;
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
 import com.claimsprocessingplatform.processingplatform.enums.ClaimType;
-import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
 import com.claimsprocessingplatform.processingplatform.model.PolicyClaim;
 import com.claimsprocessingplatform.processingplatform.model.User;
 import com.claimsprocessingplatform.processingplatform.repository.PolicyRespo;
@@ -56,7 +56,7 @@ class PolicyClaimServiceTest {
         samplePolicyClaim.setPolicyHolderName("John Doe");
         samplePolicyClaim.setDateOfBirth(LocalDate.of(1990, 1, 1));
         samplePolicyClaim.setClaimType(ClaimType.CASH);
-        samplePolicyClaim.setClimStatus(ClimStatus.PENDING);
+        samplePolicyClaim.setClaimStatus(ClaimStatus.PENDING);
         samplePolicyClaim.setUserId(sampleUser);
         samplePolicyClaim.setAmount(new BigDecimal("5000.00"));
         samplePolicyClaim.setDesc("Medical claim for surgery");
@@ -208,7 +208,7 @@ class PolicyClaimServiceTest {
         assertEquals(samplePolicyClaim.getPolicyHolderName(), responseDto.getPolicyHolderName());
         assertEquals(samplePolicyClaim.getDateOfBirth(), responseDto.getDateOfBirth());
         assertEquals(samplePolicyClaim.getClaimType(), responseDto.getClaimType());
-        assertEquals(samplePolicyClaim.getClimStatus(), responseDto.getClimStatus());
+        assertEquals(samplePolicyClaim.getClaimStatus(), responseDto.getClaimStatus());
         assertEquals(samplePolicyClaim.getUserId(), responseDto.getUserId());
         assertEquals(samplePolicyClaim.getAmount(), responseDto.getAmount());
         assertEquals(samplePolicyClaim.getDesc(), responseDto.getDesc());
@@ -223,7 +223,7 @@ class PolicyClaimServiceTest {
         secondPolicyClaim.setPolicyHolderName("Jane Smith");
         secondPolicyClaim.setDateOfBirth(LocalDate.of(1985, 5, 15));
         secondPolicyClaim.setClaimType(ClaimType.CASHLESS);
-        secondPolicyClaim.setClimStatus(ClimStatus.APPROVED);
+        secondPolicyClaim.setClaimStatus(ClaimStatus.APPROVED);
         secondPolicyClaim.setUserId(sampleUser);
         secondPolicyClaim.setAmount(new BigDecimal("3000.00"));
         secondPolicyClaim.setDesc("Dental claim");
@@ -285,7 +285,7 @@ class PolicyClaimServiceTest {
         assertEquals(samplePolicyClaim.getPolicyHolderName(), responseDto.getPolicyHolderName());
         assertEquals(samplePolicyClaim.getDateOfBirth(), responseDto.getDateOfBirth());
         assertEquals(samplePolicyClaim.getClaimType(), responseDto.getClaimType());
-        assertEquals(samplePolicyClaim.getClimStatus(), responseDto.getClimStatus());
+        assertEquals(samplePolicyClaim.getClaimStatus(), responseDto.getClaimStatus());
         assertEquals(samplePolicyClaim.getUserId(), responseDto.getUserId());
         assertEquals(samplePolicyClaim.getAmount(), responseDto.getAmount());
         assertEquals(samplePolicyClaim.getDesc(), responseDto.getDesc());
@@ -327,7 +327,7 @@ class PolicyClaimServiceTest {
 
         // Then
         verify(policyRespo, times(1)).save(argThat(policyClaim ->
-            policyClaim.getClimStatus() == ClimStatus.PENDING
+            policyClaim.getClaimStatus() == ClaimStatus.PENDING
         ));
     }
 

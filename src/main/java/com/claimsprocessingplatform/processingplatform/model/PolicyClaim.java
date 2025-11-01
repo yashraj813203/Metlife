@@ -1,10 +1,9 @@
 package com.claimsprocessingplatform.processingplatform.model;
 
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
 import com.claimsprocessingplatform.processingplatform.enums.ClaimType;
-import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
@@ -23,7 +22,7 @@ public class PolicyClaim {
     private String policyHolderName;
     private LocalDate dateOfBirth;
     private ClaimType claimType;
-    private ClimStatus climStatus;
+    private ClaimStatus claimStatus;
     private User userId;
     private BigDecimal amount;
     private String desc;

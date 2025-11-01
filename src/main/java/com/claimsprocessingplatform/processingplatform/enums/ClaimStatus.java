@@ -1,6 +1,6 @@
 package com.claimsprocessingplatform.processingplatform.enums;
 
-public enum ClimStatus {
+public enum ClaimStatus {
     PENDING,
     APPROVED,
     REJECTED

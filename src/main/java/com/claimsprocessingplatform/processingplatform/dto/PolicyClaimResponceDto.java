@@ -1,7 +1,7 @@
 package com.claimsprocessingplatform.processingplatform.dto;
 
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
 import com.claimsprocessingplatform.processingplatform.enums.ClaimType;
-import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
 import com.claimsprocessingplatform.processingplatform.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class PolicyClaimResponceDto {
     private String policyHolderName;
     private LocalDate dateOfBirth;
     private ClaimType claimType;
-    private ClimStatus climStatus;
+    private ClaimStatus claimStatus;
     private User userId;
     private BigDecimal amount;
     private String desc;
