@@ -19,4 +19,6 @@ public class PolicyClaimDto {
     private User userId;
     private BigDecimal amount;
     private String desc;
+    private String reason;
+
 }

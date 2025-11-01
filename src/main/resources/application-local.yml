@@ -10,7 +10,6 @@ spring:
       database: processingplatform
       repositories:
         type: auto
-#  LOGGING CONFIGURATION
 logging:
   level:
     org:

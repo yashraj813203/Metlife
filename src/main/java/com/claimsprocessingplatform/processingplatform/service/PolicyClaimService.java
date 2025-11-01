@@ -55,6 +55,8 @@ public class PolicyClaimService {
         policyClaim.setUserId(policyClaimDto.getUserId());
         policyClaim.setAmount(policyClaimDto.getAmount());
         policyClaim.setDesc(policyClaimDto.getDesc());
+        policyClaim.setReason(policyClaimDto.getReason());
+        policyClaim.setSubmissionDate(LocalDate.now());
         policyRespo.save(policyClaim);
         RuleService ruleService = new RuleService();
         ruleService.allRuleService(policyClaim);
@@ -78,7 +80,9 @@ public class PolicyClaimService {
                         policyClaim.getClaimStatus(),
                         policyClaim.getUserId(),
                         policyClaim.getAmount(),
-                        policyClaim.getDesc()
+                        policyClaim.getDesc(),
+                        policyClaim.getReason(),
+                        policyClaim.getSubmissionDate()
                 ))
                 .collect(Collectors.toList());
 
@@ -96,7 +100,9 @@ public class PolicyClaimService {
                 policyClaim.getClaimStatus(),
                 policyClaim.getUserId(),
                 policyClaim.getAmount(),
-                policyClaim.getDesc()
+                policyClaim.getDesc(),
+                policyClaim.getReason(),
+                policyClaim.getSubmissionDate()
         ));
     }
     

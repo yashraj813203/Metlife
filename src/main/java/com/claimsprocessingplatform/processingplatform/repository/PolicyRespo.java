@@ -16,7 +16,7 @@ public interface PolicyRespo extends MongoRepository<PolicyClaim, String> {
     
     // Group by claim status and calculate total amount for each
     @Aggregation(pipeline = {
-            "{ $group: { _id: '$climStatus', totalAmount: { $sum: '$amount' } } }"
+        "{ $group: { _id: '$claimStatus', totalAmount: { $sum: '$amount' } } }"
     })
     List<Map<String, Object>> sumClaimAmountsByStatus();
 }
