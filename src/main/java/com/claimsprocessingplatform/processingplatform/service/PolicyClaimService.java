@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PolicyClaimService {
@@ -48,6 +50,16 @@ public class PolicyClaimService {
         policyClaim.setClimStatus(ClimStatus.PENDING);
 
         policyRespo.save(policyClaim);
+    }
+    
+
+    public List<PolicyClaim> getAllClaims() {
+        return policyRespo.findAll();
+    }
+
+  
+    public Optional<PolicyClaim> getClaimById(String id) {
+        return policyRespo.findById(id);
     }
 
 }

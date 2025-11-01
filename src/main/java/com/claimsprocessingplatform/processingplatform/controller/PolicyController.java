@@ -4,6 +4,7 @@ import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
 import com.claimsprocessingplatform.processingplatform.service.PolicyClaimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,18 @@ public class PolicyController {
         this.policyService.createPolicy(policyClaimDto);
         return ResponseEntity.ok("Policy created successfully");
     }
+    @GetMapping("/getAllClaims")
+    public  ResponseEntity<String> getallClaims(){
+    	 this.policyService.getAllClaims();
+         return ResponseEntity.ok("Policy fetched successfully");
+    }
+    
+    @GetMapping("/getClaimsById")
+    public  ResponseEntity<String> getClaimsByid(@Path ){
+    	 this.policyService.getAllClaims();
+         return ResponseEntity.ok("Policy fetched successfully");
+    }
+
 
 }
 
