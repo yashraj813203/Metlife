@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface PolicyRespo extends MongoRepository<PolicyClaim, String> {
     Optional<PolicyClaim> findByPolicyId(String policyId);
+    
+    
 }
