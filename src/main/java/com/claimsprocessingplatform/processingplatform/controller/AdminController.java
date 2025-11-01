@@ -1,24 +1,48 @@
 package com.claimsprocessingplatform.processingplatform.controller;
 
-import java.util.List;
+import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponseDto;
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
+import com.claimsprocessingplatform.processingplatform.service.AdminService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.claimsprocessingplatform.processingplatform.service.*;
-import com.claimsprocessingplatform.processingplatform.model.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
+@RequiredArgsConstructor
+@Tag(name = "Admin Controller", description = "Admin endpoints for managing policy claims")
 public class AdminController {
 
-    @Autowired
-    private AdminService adminService;
-    
-    @GetMapping("/get-all-claims")
-    public List<PolicyClaim> getMethodName() {
-        return this.adminService.getAllClaims();
+    private final AdminService adminService;
+
+    @Operation(summary = "Get all claims")
+    @GetMapping("/claims")
+    public ResponseEntity<List<PolicyClaimResponseDto>> getAllClaims() {
+        return ResponseEntity.ok(adminService.getAllClaims());
     }
-    
+
+    @Operation(summary = "Get claims by status")
+    @GetMapping("/claims/status/{status}")
+    public ResponseEntity<List<PolicyClaimResponseDto>> getClaimsByStatus(@PathVariable ClaimStatus status) {
+        return ResponseEntity.ok(adminService.getClaimsByStatus(status));
+    }
+
+    @Operation(summary = "Update claim status (approve/reject)")
+    @PatchMapping("/claims/{id}/status")
+    public ResponseEntity<PolicyClaimResponseDto> updateClaimStatus(
+            @PathVariable String id,
+            @RequestParam ClaimStatus status) {
+        return ResponseEntity.ok(adminService.updateClaimStatus(id, status));
+    }
+
+    @Operation(summary = "Get claim amount summary grouped by status")
+    @GetMapping("/claims/summary")
+    public ResponseEntity<Map<String, Double>> getClaimAmountSummary() {
+        return ResponseEntity.ok(adminService.getClaimSummaryByStatus());
+    }
 }

@@ -1,12 +1,12 @@
 package com.claimsprocessingplatform.processingplatform.service;
 
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
-import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponceDto;
+import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponseDto;
 import com.claimsprocessingplatform.processingplatform.enums.ClaimType;
-import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
 import com.claimsprocessingplatform.processingplatform.model.PolicyClaim;
 import com.claimsprocessingplatform.processingplatform.model.User;
-import com.claimsprocessingplatform.processingplatform.repository.PolicyRespo;
+import com.claimsprocessingplatform.processingplatform.repository.PolicyClaimRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 class PolicyClaimServiceTest {
 
     @Mock
-    private PolicyRespo policyRespo;
+    private PolicyClaimRepository policyClaimRepository;
 
     @InjectMocks
     private PolicyClaimService policyClaimService;
@@ -56,7 +56,7 @@ class PolicyClaimServiceTest {
         samplePolicyClaim.setPolicyHolderName("John Doe");
         samplePolicyClaim.setDateOfBirth(LocalDate.of(1990, 1, 1));
         samplePolicyClaim.setClaimType(ClaimType.CASH);
-        samplePolicyClaim.setClimStatus(ClimStatus.PENDING);
+        samplePolicyClaim.setClimStatus(ClaimStatus.PENDING);
         samplePolicyClaim.setUserId(sampleUser);
         samplePolicyClaim.setAmount(new BigDecimal("5000.00"));
         samplePolicyClaim.setDesc("Medical claim for surgery");
@@ -67,13 +67,13 @@ class PolicyClaimServiceTest {
     @Test
     void createPolicy_ValidPolicyClaimDto_ShouldSavePolicyClaim() {
         // Given
-        when(policyRespo.findByPolicyId("POL123")).thenReturn(Optional.empty());
+        when(policyClaimRepository.findByPolicyId("POL123")).thenReturn(Optional.empty());
 
         // When
         policyClaimService.createPolicy(validPolicyClaimDto);
 
         // Then
-        verify(policyRespo, times(1)).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, times(1)).save(any(PolicyClaim.class));
     }
 
     @Test
@@ -87,7 +87,7 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals("Policy ID is required", exception.getMessage());
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     @Test
@@ -101,7 +101,7 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals("Policy ID is required", exception.getMessage());
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     @Test
@@ -115,7 +115,7 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals("Policy holder name is required", exception.getMessage());
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     @Test
@@ -129,7 +129,7 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals("Policy holder name is required", exception.getMessage());
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     @Test
@@ -143,7 +143,7 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals("Date of birth is required", exception.getMessage());
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     @Test
@@ -157,7 +157,7 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals(exception.getMessage(), "Date of birth cannot be in future");
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     @Test
@@ -171,13 +171,13 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals("Claim type is required", exception.getMessage());
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     @Test
     void createPolicy_DuplicatePolicyId_ShouldThrowIllegalArgumentException() {
         // Given
-        when(policyRespo.findByPolicyId("POL123")).thenReturn(Optional.of(samplePolicyClaim));
+        when(policyClaimRepository.findByPolicyId("POL123")).thenReturn(Optional.of(samplePolicyClaim));
 
         // When & Then
         IllegalArgumentException exception = assertThrows(
@@ -185,7 +185,7 @@ class PolicyClaimServiceTest {
                 () -> policyClaimService.createPolicy(validPolicyClaimDto)
         );
         assertEquals("A policy with this ID already exists", exception.getMessage());
-        verify(policyRespo, never()).save(any(PolicyClaim.class));
+        verify(policyClaimRepository, never()).save(any(PolicyClaim.class));
     }
 
     // ========== getAllClaims Method Tests ==========
@@ -194,15 +194,15 @@ class PolicyClaimServiceTest {
     void getAllClaims_ExistingClaims_ShouldReturnListOfPolicyClaimResponceDto() {
         // Given
         List<PolicyClaim> policyClaims = Arrays.asList(samplePolicyClaim);
-        when(policyRespo.findAll()).thenReturn(policyClaims);
+        when(policyClaimRepository.findAll()).thenReturn(policyClaims);
 
         // When
-        List<PolicyClaimResponceDto> result = policyClaimService.getAllClaims();
+        List<PolicyClaimResponseDto> result = policyClaimService.getAllClaims();
 
         // Then
         assertNotNull(result);
         assertEquals(1, result.size());
-        PolicyClaimResponceDto responseDto = result.get(0);
+        PolicyClaimResponseDto responseDto = result.get(0);
         assertEquals(samplePolicyClaim.getId(), responseDto.getId());
         assertEquals(samplePolicyClaim.getPolicyId(), responseDto.getPolicyId());
         assertEquals(samplePolicyClaim.getPolicyHolderName(), responseDto.getPolicyHolderName());
@@ -223,16 +223,16 @@ class PolicyClaimServiceTest {
         secondPolicyClaim.setPolicyHolderName("Jane Smith");
         secondPolicyClaim.setDateOfBirth(LocalDate.of(1985, 5, 15));
         secondPolicyClaim.setClaimType(ClaimType.CASHLESS);
-        secondPolicyClaim.setClimStatus(ClimStatus.APPROVED);
+        secondPolicyClaim.setClimStatus(ClaimStatus.APPROVED);
         secondPolicyClaim.setUserId(sampleUser);
         secondPolicyClaim.setAmount(new BigDecimal("3000.00"));
         secondPolicyClaim.setDesc("Dental claim");
 
         List<PolicyClaim> policyClaims = Arrays.asList(samplePolicyClaim, secondPolicyClaim);
-        when(policyRespo.findAll()).thenReturn(policyClaims);
+        when(policyClaimRepository.findAll()).thenReturn(policyClaims);
 
         // When
-        List<PolicyClaimResponceDto> result = policyClaimService.getAllClaims();
+        List<PolicyClaimResponseDto> result = policyClaimService.getAllClaims();
 
         // Then
         assertNotNull(result);
@@ -244,7 +244,7 @@ class PolicyClaimServiceTest {
     @Test
     void getAllClaims_EmptyList_ShouldThrowIllegalArgumentException() {
         // Given
-        when(policyRespo.findAll()).thenReturn(Arrays.asList());
+        when(policyClaimRepository.findAll()).thenReturn(Arrays.asList());
 
         // When & Then
         IllegalArgumentException exception = assertThrows(
@@ -257,7 +257,7 @@ class PolicyClaimServiceTest {
     @Test
     void getAllClaims_NullList_ShouldThrowIllegalArgumentException() {
         // Given
-        when(policyRespo.findAll()).thenReturn(null);
+        when(policyClaimRepository.findAll()).thenReturn(null);
 
         // When & Then
         IllegalArgumentException exception = assertThrows(
@@ -272,14 +272,14 @@ class PolicyClaimServiceTest {
     @Test
     void getClaimsByid_ExistingClaimId_ShouldReturnPolicyClaimResponceDto() {
         // Given
-        when(policyRespo.findById("1")).thenReturn(Optional.of(samplePolicyClaim));
+        when(policyClaimRepository.findById("1")).thenReturn(Optional.of(samplePolicyClaim));
 
         // When
-        Optional<PolicyClaimResponceDto> result = policyClaimService.getClaimsByid("1");
+        Optional<PolicyClaimResponseDto> result = policyClaimService.getClaimsByid("1");
 
         // Then
         assertTrue(result.isPresent());
-        PolicyClaimResponceDto responseDto = result.get();
+        PolicyClaimResponseDto responseDto = result.get();
         assertEquals(samplePolicyClaim.getId(), responseDto.getId());
         assertEquals(samplePolicyClaim.getPolicyId(), responseDto.getPolicyId());
         assertEquals(samplePolicyClaim.getPolicyHolderName(), responseDto.getPolicyHolderName());
@@ -294,10 +294,10 @@ class PolicyClaimServiceTest {
     @Test
     void getClaimsByid_NonExistingClaimId_ShouldReturnEmptyOptional() {
         // Given
-        when(policyRespo.findById("999")).thenReturn(Optional.empty());
+        when(policyClaimRepository.findById("999")).thenReturn(Optional.empty());
 
         // When
-        Optional<PolicyClaimResponceDto> result = policyClaimService.getClaimsByid("999");
+        Optional<PolicyClaimResponseDto> result = policyClaimService.getClaimsByid("999");
 
         // Then
         assertFalse(result.isPresent());
@@ -306,10 +306,10 @@ class PolicyClaimServiceTest {
     @Test
     void getClaimsByid_NullClaimId_ShouldReturnEmptyOptional() {
         // Given
-        when(policyRespo.findById(null)).thenReturn(Optional.empty());
+        when(policyClaimRepository.findById(null)).thenReturn(Optional.empty());
 
         // When
-        Optional<PolicyClaimResponceDto> result = policyClaimService.getClaimsByid(null);
+        Optional<PolicyClaimResponseDto> result = policyClaimService.getClaimsByid(null);
 
         // Then
         assertFalse(result.isPresent());
@@ -320,27 +320,27 @@ class PolicyClaimServiceTest {
     @Test
     void createPolicy_ValidPolicyClaimDto_ShouldSetPendingStatus() {
         // Given
-        when(policyRespo.findByPolicyId("POL123")).thenReturn(Optional.empty());
+        when(policyClaimRepository.findByPolicyId("POL123")).thenReturn(Optional.empty());
 
         // When
         policyClaimService.createPolicy(validPolicyClaimDto);
 
         // Then
-        verify(policyRespo, times(1)).save(argThat(policyClaim ->
-            policyClaim.getClimStatus() == ClimStatus.PENDING
+        verify(policyClaimRepository, times(1)).save(argThat(policyClaim ->
+            policyClaim.getClimStatus() == ClaimStatus.PENDING
         ));
     }
 
     @Test
     void createPolicy_ValidPolicyClaimDto_ShouldMapAllFieldsCorrectly() {
         // Given
-        when(policyRespo.findByPolicyId("POL123")).thenReturn(Optional.empty());
+        when(policyClaimRepository.findByPolicyId("POL123")).thenReturn(Optional.empty());
 
         // When
         policyClaimService.createPolicy(validPolicyClaimDto);
 
         // Then
-        verify(policyRespo, times(1)).save(argThat(policyClaim ->
+        verify(policyClaimRepository, times(1)).save(argThat(policyClaim ->
             policyClaim.getPolicyId().equals("POL123") &&
             policyClaim.getPolicyHolderName().equals("John Doe") &&
             policyClaim.getDateOfBirth().equals(LocalDate.of(1990, 1, 1)) &&

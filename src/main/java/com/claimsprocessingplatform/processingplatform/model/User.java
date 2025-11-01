@@ -1,24 +1,30 @@
 package com.claimsprocessingplatform.processingplatform.model;
 
-import lombok.Data; 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.index.Indexed;
 
-@Data 
-@Document(collection = "users") 
+@Data
+@Document(collection = "users")
 public class User {
 
     @Id
-    private String id; 
+    private String id;
 
     @Field("name")
+    @NotBlank(message = "Full name is required")
     private String fullName;
 
     @Indexed(unique = true)
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    private String phonenumber;
-
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
+    private String phoneNumber;
 }

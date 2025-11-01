@@ -1,8 +1,8 @@
 package com.claimsprocessingplatform.processingplatform.dto;
 
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
 import com.claimsprocessingplatform.processingplatform.enums.ClaimType;
-import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
-import com.claimsprocessingplatform.processingplatform.model.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,17 +10,25 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
-public class PolicyClaimResponceDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PolicyClaimResponseDto {
+
     private String id;
     private String policyId;
     private String policyHolderName;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
+
     private ClaimType claimType;
-    private ClimStatus climStatus;
-    private User userId;
+    private ClaimStatus claimStatus;
+
     private BigDecimal amount;
-    private String desc;
+    private String description;
+
+    private String userId;
+    private String userName;
+    private String userEmail;
 }

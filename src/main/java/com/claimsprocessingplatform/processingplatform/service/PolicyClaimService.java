@@ -1,109 +1,81 @@
 package com.claimsprocessingplatform.processingplatform.service;
 
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
-import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponceDto;
-import com.claimsprocessingplatform.processingplatform.enums.ClimStatus;
+import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponseDto;
+import com.claimsprocessingplatform.processingplatform.enums.ClaimStatus;
 import com.claimsprocessingplatform.processingplatform.model.PolicyClaim;
-import com.claimsprocessingplatform.processingplatform.repository.PolicyRespo;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.claimsprocessingplatform.processingplatform.model.User;
+import com.claimsprocessingplatform.processingplatform.repository.PolicyClaimRepository;
+import com.claimsprocessingplatform.processingplatform.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PolicyClaimService {
-    @Autowired
-    private PolicyRespo policyRespo;
 
-    public PolicyClaimService(PolicyRespo policyRespo){
-        this.policyRespo = policyRespo;
-    }
-    public void createPolicy(PolicyClaimDto policyClaimDto) {
+    private final PolicyClaimRepository policyClaimRepository;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-        if (policyClaimDto.getPolicyId() == null || policyClaimDto.getPolicyId().trim().isEmpty()) {
-            throw new IllegalArgumentException("Policy ID is required");
-        }
+    public PolicyClaimResponseDto createPolicy(PolicyClaimDto dto) {
 
-        if (policyClaimDto.getPolicyHolderName() == null || policyClaimDto.getPolicyHolderName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Policy holder name is required");
+        if (!policyClaimRepository.findAllByPolicyId(dto.getPolicyId()).isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "A policy with this ID already exists");
         }
 
-        if (policyClaimDto.getDateOfBirth() == null) {
-            throw new IllegalArgumentException("Date of birth is required");
+        if (dto.getDateOfBirth().isAfter(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date of birth cannot be in the future");
         }
 
-        if (policyClaimDto.getClaimType() == null) {
-            throw new IllegalArgumentException("Claim type is required");
-        }
-        if (policyClaimDto.getDateOfBirth().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Date of birth cannot be in future");
-        }
-        if (policyRespo.findByPolicyId(policyClaimDto.getPolicyId()).isPresent()) {
-            throw new IllegalArgumentException("A policy with this ID already exists");
-        }
-        PolicyClaim policyClaim = new PolicyClaim();
-        policyClaim.setPolicyId(policyClaimDto.getPolicyId());
-        policyClaim.setPolicyHolderName(policyClaimDto.getPolicyHolderName());
-        policyClaim.setDateOfBirth(policyClaimDto.getDateOfBirth());
-        policyClaim.setClaimType(policyClaimDto.getClaimType());
-        policyClaim.setClimStatus(ClimStatus.PENDING);
-        policyClaim.setUserId(policyClaimDto.getUserId());
-        policyClaim.setAmount(policyClaimDto.getAmount());
-        policyClaim.setDesc(policyClaimDto.getDesc());
-        policyRespo.save(policyClaim);
-    }
-    public List<PolicyClaimResponceDto> getAllClaims() {
-        if (policyRespo.findAll() == null || policyRespo.findAll().isEmpty()) {
-            throw new IllegalArgumentException("No policy found");
-        }
-        List<PolicyClaim> policyClaims = policyRespo.findAll();
-        return policyClaims.stream()
-                .map(policyClaim -> new PolicyClaimResponceDto(
-                        policyClaim.getId(),
-                        policyClaim.getPolicyId(),
-                        policyClaim.getPolicyHolderName(),
-                        policyClaim.getDateOfBirth(),
-                        policyClaim.getClaimType(),
-                        policyClaim.getClimStatus(),
-                        policyClaim.getUserId(),
-                        policyClaim.getAmount(),
-                        policyClaim.getDesc()
-                ))
-                .collect(Collectors.toList());
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
+        PolicyClaim claim = modelMapper.map(dto, PolicyClaim.class);
+        claim.setClaimStatus(ClaimStatus.PENDING);
+        claim.setUser(user);
+
+        PolicyClaim saved = policyClaimRepository.save(claim);
+        return mapToResponse(saved);
     }
 
-  
-    public Optional<PolicyClaimResponceDto> getClaimsByid(String ClaimId) {
-        Optional<PolicyClaim> policyClaimOptional = policyRespo.findById(ClaimId);
-        return policyClaimOptional.map(policyClaim -> new PolicyClaimResponceDto(
-                policyClaim.getId(),
-                policyClaim.getPolicyId(),
-                policyClaim.getPolicyHolderName(),
-                policyClaim.getDateOfBirth(),
-                policyClaim.getClaimType(),
-                policyClaim.getClimStatus(),
-                policyClaim.getUserId(),
-                policyClaim.getAmount(),
-                policyClaim.getDesc()
-        ));
+    public List<PolicyClaimResponseDto> getAllClaims() {
+        List<PolicyClaim> claims = policyClaimRepository.findAll();
+        if (claims.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No policy claims found");
+        }
+        return claims.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
-    
+
+    public PolicyClaimResponseDto getClaimById(String claimId) {
+        PolicyClaim claim = policyClaimRepository.findById(claimId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Claim not found"));
+        return mapToResponse(claim);
+    }
+
     public Map<String, Double> getClaimAmountSummary() {
-        List<Map<String, Object>> results = policyRespo.sumClaimAmountsByStatus();
-
+        var results = policyClaimRepository.sumClaimAmountsByStatus();
         Map<String, Double> summary = new HashMap<>();
-        for (Map<String, Object> result : results) {
-            String status = (String) result.get("_id");
-            Double total = ((Number) result.get("totalAmount")).doubleValue();
-            summary.put(status, total);
+        for (var r : results) {
+            summary.put(r.getId(), r.getTotalAmount().doubleValue());
         }
         return summary;
     }
 
+    private PolicyClaimResponseDto mapToResponse(PolicyClaim claim) {
+        PolicyClaimResponseDto dto = modelMapper.map(claim, PolicyClaimResponseDto.class);
+        if (claim.getUser() != null) {
+            dto.setUserId(claim.getUser().getId());
+            dto.setUserName(claim.getUser().getFullName());
+            dto.setUserEmail(claim.getUser().getEmail());
+        }
+        return dto;
+    }
 }

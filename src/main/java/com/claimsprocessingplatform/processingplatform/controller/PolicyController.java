@@ -1,66 +1,52 @@
 package com.claimsprocessingplatform.processingplatform.controller;
 
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
-
-import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponceDto;
-
-import com.claimsprocessingplatform.processingplatform.model.PolicyClaim;
-
+import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponseDto;
 import com.claimsprocessingplatform.processingplatform.service.PolicyClaimService;
-
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/policies")
+@RequiredArgsConstructor
+@Tag(name = "Policy Controller", description = "Endpoints for creating and retrieving policy claims")
 public class PolicyController {
 
-    @Autowired
-    private PolicyClaimService policyService;
+    private final PolicyClaimService policyService;
 
-    public PolicyController(PolicyClaimService policyService) {
-        this.policyService = policyService;
+    @Operation(summary = "Create a new policy claim")
+    @ApiResponse(responseCode = "201", description = "Policy created successfully")
+    @PostMapping
+    public ResponseEntity<PolicyClaimResponseDto> createPolicy(@Valid @RequestBody PolicyClaimDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(policyService.createPolicy(dto));
     }
 
-    @PostMapping("/createPolicy")
-    public ResponseEntity<String> createPolicy(@RequestBody PolicyClaimDto policyClaimDto) {
-        this.policyService.createPolicy(policyClaimDto);
-        return ResponseEntity.ok("Policy created successfully");
+    @Operation(summary = "Get all policy claims")
+    @GetMapping
+    public ResponseEntity<List<PolicyClaimResponseDto>> getAllClaims() {
+        return ResponseEntity.ok(policyService.getAllClaims());
     }
-    @GetMapping("/getAllClaims")
-    public  ResponseEntity<List<PolicyClaimResponceDto>> getallClaims(){
-    	 List<PolicyClaimResponceDto> policyClaimResponceDtos = this.policyService.getAllClaims();
-         return ResponseEntity.ok(policyClaimResponceDtos);
-    }
-    
 
-    @GetMapping("/getClaimsById/{id}")
-    public  ResponseEntity<PolicyClaimResponceDto> getClaimsByid(@PathVariable String ClaimId ){
-    	 PolicyClaimResponceDto policyClaimResponceDto = this.policyService.getClaimsByid(ClaimId)
-                 .orElseThrow(() -> new IllegalArgumentException("Policy claim not found with ID: " + ClaimId));
-         return ResponseEntity.ok(policyClaimResponceDto);
+    @Operation(summary = "Get policy claim by ID")
+    @ApiResponse(responseCode = "200", description = "Claim retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Claim not found")
+    @GetMapping("/{id}")
+    public ResponseEntity<PolicyClaimResponseDto> getClaimById(@PathVariable("id") String id) {
+        return ResponseEntity.ok(policyService.getClaimById(id));
     }
-    
-    //Get total claim amounts grouped by status
+
+    @Operation(summary = "Get claim amount summary grouped by status")
     @GetMapping("/summary/status")
     public ResponseEntity<Map<String, Double>> getClaimAmountSummary() {
-        return ResponseEntity.ok( policyService.getClaimAmountSummary());
-
+        return ResponseEntity.ok(policyService.getClaimAmountSummary());
     }
-
 }
-
-
