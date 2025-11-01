@@ -5,9 +5,10 @@ import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimDto;
 import com.claimsprocessingplatform.processingplatform.dto.PolicyClaimResponceDto;
 
 import com.claimsprocessingplatform.processingplatform.model.PolicyClaim;
-
+import com.claimsprocessingplatform.processingplatform.service.AzureBlobStorageService;
 import com.claimsprocessingplatform.processingplatform.service.PolicyClaimService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -31,8 +35,10 @@ public class PolicyController {
 
     @Autowired
     private PolicyClaimService policyService;
+    @Autowired
+    private AzureBlobStorageService azureBlobStorageService;
 
-    public PolicyController(PolicyClaimService policyService) {
+    public PolicyController(PolicyClaimService policyService,AzureBlobStorageService azureBlobStorageService) {
         this.policyService = policyService;
     }
 
@@ -61,6 +67,12 @@ public class PolicyController {
         return ResponseEntity.ok( policyService.getClaimAmountSummary());
 
     }
+
+    @PostMapping("/upload")
+    public String getMethodName(@RequestParam MultipartFile param) throws IOException {
+        return ResponseEntity.ok(azureBlobStorageService.uploadFile(param,param.getOriginalFilename())).toString();
+    }
+    
 
 }
 
