@@ -39,7 +39,7 @@ public class PolicyClaimService {
             throw new IllegalArgumentException("Claim type is required");
         }
         if (policyClaimDto.getDateOfBirth().isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException("Date of birth cannot be in the future");
+            throw new IllegalArgumentException("Date of birth cannot be in future");
         }
         if (policyRespo.findByPolicyId(policyClaimDto.getPolicyId()).isPresent()) {
             throw new IllegalArgumentException("A policy with this ID already exists");
