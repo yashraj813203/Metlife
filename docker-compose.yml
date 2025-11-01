@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # MongoDB Service
+  mongodb:
+    image: mongo:7.0
+    container_name: claims-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: claimsdb
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - claims-network
+
+  # Spring Boot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: claims-processing-platform
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: 27017
+      SPRING_DATA_MONGODB_DATABASE: claimsdb
+      SPRING_DATA_MONGODB_USERNAME: admin
+      SPRING_DATA_MONGODB_PASSWORD: password
+    depends_on:
+      - mongodb
+    networks:
+      - claims-network
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  claims-network:
+    driver: bridge

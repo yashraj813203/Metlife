@@ -23,4 +23,6 @@ public class PolicyClaimResponceDto {
     private User userId;
     private BigDecimal amount;
     private String desc;
+    private String reason;
+    private LocalDate submissionDate;
 }

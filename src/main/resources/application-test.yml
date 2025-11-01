@@ -1,0 +1,20 @@
+server:
+  port: 8080
+  forward-headers-strategy: native
+spring:
+  data:
+    mongodb:
+      host: 65.2.78.234
+      port: 27017
+      database: processingplatform
+      username: mydbuser
+      password: mydbpassword
+      repositories:
+        type: auto
+      authentication-database: admin
+# LOGGING CONFIGURATION
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO

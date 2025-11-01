@@ -26,4 +26,6 @@ public class PolicyClaim {
     private User userId;
     private BigDecimal amount;
     private String desc;
+    private String reason;
+    private LocalDate submissionDate;
 }

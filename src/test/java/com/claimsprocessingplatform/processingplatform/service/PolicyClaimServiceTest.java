@@ -39,7 +39,7 @@ class PolicyClaimServiceTest {
 
     @BeforeEach
     void setUp() {
-        sampleUser = new User("1", "john_doe", "john@example.com", "John Doe");
+        sampleUser = new User("1", "john.doe@example.com", "John Doe", "1234567890");
 
         validPolicyClaimDto = new PolicyClaimDto();
         validPolicyClaimDto.setPolicyId("POL123");

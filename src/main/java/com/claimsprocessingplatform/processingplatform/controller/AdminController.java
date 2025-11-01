@@ -18,6 +18,7 @@ public class AdminController {
     
     @GetMapping("/get-all-claims")
     public List<PolicyClaim> getMethodName() {
+
         return this.adminService.getAllClaims();
     }
     
